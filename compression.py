@@ -1,6 +1,7 @@
 import math
 import struct
 import sys
+from encryption import encrypt_message_RSA
 from collections import Counter
 
 
@@ -22,14 +23,33 @@ def compression(generated_file, compressed_file):
     count_char = Counter(text_to_encrypt)
 
     binary_representation = [translating_to_binary_char(i, N) for i in range(x)]
+
     binary_list = [(ch, binary_representation[i]) for i, (ch, freq) in enumerate(count_char.most_common())]
+
     sorted_char_list = [ch for ch, _ in binary_list]
+
+    text_for_rsa = "".join(sorted_char_list)
+
     binary_dict = dict(binary_list)
-    print(binary_dict)
+
+    with open('public_key.pem', 'r') as f:
+        public_key = tuple()
+        first_value = int(f.readline().strip())
+
+        public_key += (first_value,)
+
+        second_value = int(f.readline().strip())
+        public_key += (second_value,)
+
+    encrypted_bytes_array = [encrypted_char.to_bytes((encrypted_char.bit_length() + 7) // 8, 'big') for encrypted_char
+                             in encrypt_message_RSA(text_for_rsa, public_key)]
+    encrypted_bytes_unique_words = b"".join(encrypted_bytes_array)
 
     with open(compressed_file, 'wb') as destination:
+
         destination.write(chr(R).encode())
-        destination.write(struct.pack('I', len(sorted_char_list)))
+        destination.write(struct.pack('I', len(encrypted_bytes_unique_words)))
+        destination.write(encrypted_bytes_unique_words)
 
         bin_array = list()
 
