@@ -24,8 +24,8 @@ def compression(generated_file, compressed_file):
     binary_representation = [translating_to_binary_char(i, N) for i in range(x)]
     binary_list = [(ch, binary_representation[i]) for i, (ch, freq) in enumerate(count_char.most_common())]
     sorted_char_list = [ch for ch, _ in binary_list]
-    print(len(sorted_char_list))
     binary_dict = dict(binary_list)
+    print(binary_dict)
 
     with open(compressed_file, 'wb') as destination:
         destination.write(chr(R).encode())
