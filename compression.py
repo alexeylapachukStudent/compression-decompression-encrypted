@@ -4,6 +4,12 @@ import sys
 from encryption import encrypt_message_RSA
 from collections import Counter
 
+'''
+Funckja dla kompresji zgenerowanych danych 
+
+
+'''
+
 
 def translating_to_binary_char(symbol, length):
     bin_symbol = bin(symbol)[2::]
@@ -30,7 +36,6 @@ def compression(generated_file, compressed_file):
 
     text_for_rsa = "".join(sorted_char_list)
     binary_dict = dict(binary_list)
-
 
     with open('public_key.pem', 'r') as f:
         public_key = tuple()
