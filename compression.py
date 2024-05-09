@@ -17,6 +17,7 @@ def compression(generated_file, compressed_file):
 
     k = len(text_to_encrypt)
     x = len(set(text_to_encrypt))
+    print(x)
     N = math.ceil(math.log2(x))
     R = (8 - (k * N) % 8) % 8
 
@@ -25,12 +26,11 @@ def compression(generated_file, compressed_file):
     binary_representation = [translating_to_binary_char(i, N) for i in range(x)]
 
     binary_list = [(ch, binary_representation[i]) for i, (ch, freq) in enumerate(count_char.most_common())]
-
     sorted_char_list = [ch for ch, _ in binary_list]
 
     text_for_rsa = "".join(sorted_char_list)
-
     binary_dict = dict(binary_list)
+
 
     with open('public_key.pem', 'r') as f:
         public_key = tuple()
@@ -41,9 +41,18 @@ def compression(generated_file, compressed_file):
         second_value = int(f.readline().strip())
         public_key += (second_value,)
 
-    encrypted_bytes_array = [encrypted_char.to_bytes((encrypted_char.bit_length() + 7) // 8, 'big') for encrypted_char
-                             in encrypt_message_RSA(text_for_rsa, public_key)]
+    enc = encrypt_message_RSA(text_for_rsa, public_key)
+    print(enc)
+
+    encrypted_bytes_array = list()
+
+    for encrypted_char in enc:
+        num_bytes = (encrypted_char.bit_length() + 7) // 8
+        encrypted_bytes_array.append(encrypted_char.to_bytes(num_bytes, 'big'))
+
     encrypted_bytes_unique_words = b"".join(encrypted_bytes_array)
+
+    print(encrypted_bytes_unique_words)
 
     with open(compressed_file, 'wb') as destination:
 
